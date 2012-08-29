@@ -1,0 +1,11 @@
+.panel {
+  width: 100px;
+  height: 50px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  background: lightBlue;
+  text-align: center;
+  line-height: 50px;
+  font-family: sans-serif;
+}
