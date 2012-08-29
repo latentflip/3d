@@ -4,22 +4,12 @@ $ ->
 
   state.angle = 0
 
-  #updatePosition = ->
-    #state.angle = (state.angle + 5) % 360
-    #
-    #
+  onDeviceOrientation = (lr, fb, dir) ->
+    updatePanels(lr, fb, dir)
 
-  $(window).on 'deviceorientation', (e) ->
-    #alert(e.alpha)
-    state.angle = e.alpha
-    document.write(state.angle)
-    
+  window.addEventListener 'deviceorientation', (eventData) ->
+    onDeviceOrientation( eventData.gamma, eventData.beta, eventData.alpha )
   
-  updatePanels = ->
+  updatePanels = (lr, fb, dir) ->
     $('.panel').css left: (state.angle/360) * 100 + '%'
 
-  #setInterval updatePosition, 10
-  setInterval updatePanels, 10
-
-  
-  

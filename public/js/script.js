@@ -2,19 +2,20 @@
 (function() {
 
   $(function() {
-    var state, updatePanels;
+    var onDeviceOrientation, state, updatePanels;
     state = {};
     state.angle = 0;
-    $(window).on('deviceorientation', function(e) {
-      state.angle = e.alpha;
-      return document.write(state.angle);
+    onDeviceOrientation = function(lr, fb, dir) {
+      return updatePanels(lr, fb, dir);
+    };
+    window.addEventListener('deviceorientation', function(eventData) {
+      return onDeviceOrientation(eventData.gamma, eventData.beta, eventData.alpha);
     });
-    updatePanels = function() {
+    return updatePanels = function(lr, fb, dir) {
       return $('.panel').css({
         left: (state.angle / 360) * 100 + '%'
       });
     };
-    return setInterval(updatePanels, 10);
   });
 
 }).call(this);
