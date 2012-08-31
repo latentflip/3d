@@ -2,7 +2,18 @@
 (function() {
 
   $(function() {
-    var onDeviceOrientation, state, updatePanels;
+    var degToRad, onDeviceOrientation, pow, radToDeg, scene, state, updatePanels;
+    degToRad = function(deg) {
+      return deg * (Math.PI / 180);
+    };
+    radToDeg = function(rad) {
+      return rad / (Math.PI / 180);
+    };
+    pow = Math.pow;
+    scene = {};
+    scene.circleDepth = 5;
+    scene.camDepth = 10;
+    scene.camAngle = 50;
     state = {};
     state.angle = 0;
     onDeviceOrientation = function(lr, fb, dir) {
@@ -11,11 +22,28 @@
     window.addEventListener('deviceorientation', function(eventData) {
       return onDeviceOrientation(eventData.gamma, eventData.beta, eventData.alpha);
     });
-    return updatePanels = function(lr, fb, dir) {
-      return $('.panel').css({
-        left: (state.angle / 360) * 100 + '%'
+    updatePanels = function(lr, fb, dir) {
+      return $('.panel').each(function() {
+        var alpha, b_a, beta, c, camToObj, gamma, objAngle, p, r, viewRange, viewRatio;
+        beta = dir;
+        alpha = parseInt($(this).data('angle'), 10);
+        b_a = beta - alpha;
+        r = parseInt($(this).data('z'), 10);
+        c = scene.camDepth;
+        camToObj = pow(pow(r, 2) + pow(c, 2) - 2 * r * c * Math.cos(degToRad(b_a)), 0.5);
+        p = (pow(c, 2) + pow(camToObj, 2) - pow(r, 2)) / (2 * c * camToObj);
+        gamma = radToDeg(Math.acos(p));
+        objAngle = -1 * (180 - gamma);
+        viewRange = [(dir - scene.camAngle / 2) % 360, (dir + scene.camAngle / 2) % 360];
+        viewRatio = (objAngle - viewRange[0]) / (viewRange[1] - viewRange[0]);
+        return $(this).css({
+          left: viewRatio * 100 + '%'
+        });
       });
     };
+    return setInterval((function() {
+      return updatePanels(0, 0, state.angle = (state.angle + 1) % 360);
+    }), 10);
   });
 
 }).call(this);
